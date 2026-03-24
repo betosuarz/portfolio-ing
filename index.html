@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alberto Suárez — Ingeniero Civil & BIM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #F4F1EC;
+      --ink: #1A1814;
+      --ink-dim: #6B6760;
+      --accent: #C8432A;
+      --accent2: #2A6BC8;
+      --line: rgba(26, 24, 20, .12);
+      --card-bg: #EFECE6;
+      --mono: 'DM Mono', monospace;
+      --serif: 'Playfair Display', serif;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    /* ─── SCROLL CONTROLADO POR JS ─── */
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      /* JS gestiona el scroll sección a sección */
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 15px;
+      line-height: 1.65;
+      overflow-x: hidden;
+      padding-right: 60px;
+    }
+
+    /* Cada sección ocupa exactamente 100vh */
+    header,
+    section {
+      height: 100vh;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── CURSOR ─── */
+    .cursor {
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform .15s ease, opacity .2s;
+      mix-blend-mode: multiply;
+    }
+
+    .cursor.big {
+      transform: scale(5);
+      opacity: .3;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.6rem 0;
+      width: 60px;
+      background: rgba(244, 241, 236, .92);
+      backdrop-filter: blur(16px);
+      border-left: 1px solid var(--line);
+    }
+
+    /* ─── LOGO MINIMALISTA ─── */
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      text-decoration: none;
+      line-height: 1;
+    }
+
+    .nav-logo-a,
+    .nav-logo-s {
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: .9rem;
+      letter-spacing: .25em;
+      color: var(--ink);
+      text-transform: uppercase;
+    }
+
+    .nav-logo-line {
+      width: 16px;
+      height: 1px;
+      background: var(--accent);
+      display: block;
+      margin: 4px 0;
+    }
+
+    /* ─── NAV LINKS ─── */
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-links li {
+      position: relative;
+    }
+
+    .nav-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color .25s, background .25s, transform .2s, box-shadow .25s;
+      position: relative;
+    }
+
+    .nav-links a svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke .25s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+      background: rgba(200, 67, 42, .08);
+      transform: scale(1.15);
+      box-shadow: 0 4px 16px rgba(200, 67, 42, .15);
+    }
+
+    /* ESTADO ACTIVO — iluminado en rojo */
+    .nav-links a.active {
+      color: var(--accent);
+      background: rgba(200, 67, 42, .12);
+      box-shadow: 0 2px 12px rgba(200, 67, 42, .2);
+    }
+
+    /* Tooltip */
+    .nav-links a::after {
+      content: attr(data-label);
+      position: absolute;
+      right: calc(100% + 12px);
+      top: 50%;
+      transform: translateY(-50%) translateX(6px);
+      background: var(--ink);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .35rem .7rem;
+      border-radius: 3px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+    }
+
+    .nav-links a:hover::after {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    /* Indicador activo: línea roja a la izquierda */
+    .nav-links a.active::before {
+      content: '';
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .nav-bottom {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .nav-bottom a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color .2s, background .2s, transform .2s;
+    }
+
+    .nav-bottom a svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav-bottom a:hover {
+      color: var(--accent);
+      background: rgba(200, 67, 42, .08);
+      transform: scale(1.12);
+    }
+
+    /* ─── HERO ─── */
+    header {
+      display: grid;
+      grid-template-columns: 280px 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Columna foto */
+    .hero-photo-col {
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeIn .9s .1s forwards;
+    }
+
+    .hero-photo-col img,
+    .hero-photo-col .hero-photo-placeholder-full {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    /* Placeholder mientras no hay foto real */
+    .hero-photo-placeholder-full {
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      color: var(--ink-dim);
+    }
+
+    .hero-photo-placeholder-full svg {
+      width: 56px;
+      height: 56px;
+      stroke: var(--ink-dim);
+      fill: none;
+      stroke-width: 1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .4;
+    }
+
+    .hero-photo-placeholder-full span {
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .5;
+    }
+
+    /* Línea decorativa de acento en el borde derecho de la foto */
+    .hero-photo-col::after {
+      content: '';
+      position: absolute;
+      top: 15%;
+      bottom: 15%;
+      right: 0;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 5vw 4vw 5vw 5vw;
+    }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp .6s .2s forwards;
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp .7s .35s forwards;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 1.6rem;
+      font-size: 1rem;
+      color: var(--ink-dim);
+      max-width: 38ch;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp .7s .5s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 2.4rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .7s .65s forwards;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1.6rem;
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      font-weight: 500;
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .12);
+    }
+
+    .btn-primary {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+    }
+
+    .hero-photo-wrap {
+      position: relative;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+
+    .hero-photo-placeholder {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--bg);
+      letter-spacing: -.02em;
+    }
+
+    .hero-photo-ring {
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(200, 67, 42, .25);
+      animation: spin 8s linear infinite;
+      border-top-color: var(--accent);
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6vw 8vw 6vw 4vw;
+      opacity: 0;
+      animation: fadeIn .9s .5s forwards;
+    }
+
+    .hero-card {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 2.8rem 2.4rem;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: -12px;
+      bottom: -12px;
+      border: 1.5px solid var(--ink);
+      border-radius: 4px;
+      z-index: -1;
+    }
+
+    .card-label {
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .card-stat {
+      margin-bottom: 1.6rem;
+    }
+
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .stat-num sup {
+      font-size: 1.2rem;
+      vertical-align: super;
+    }
+
+    .stat-desc {
+      font-size: .82rem;
+      color: rgba(244, 241, 236, .6);
+      margin-top: .3rem;
+    }
+
+    .card-divider {
+      border: none;
+      border-top: 1px solid rgba(244, 241, 236, .12);
+      margin: 1.4rem 0;
+    }
+
+    .card-contact {
+      font-size: .82rem;
+      color: rgba(244, 241, 236, .7);
+      line-height: 2;
+    }
+
+    .card-contact a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .hero-bg-text {
+      position: absolute;
+      bottom: -2rem;
+      right: -1rem;
+      font-family: var(--serif);
+      font-size: 22vw;
+      font-weight: 900;
+      color: rgba(26, 24, 20, .035);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 0;
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      padding: 6rem 8vw;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-num {
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--accent);
+      letter-spacing: .14em;
+    }
+
+    h2 {
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    /* ─── PROPUESTA DE VALOR ─── */
+    .valor-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      max-width: 900px;
+    }
+
+    .valor-text {
+      padding: 2.4rem 2.8rem 2.4rem 0;
+      font-size: 1.08rem;
+      line-height: 1.8;
+      color: var(--ink);
+      border-right: 1px solid var(--line);
+    }
+
+    .valor-text strong {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .valor-pills {
+      padding: 2.4rem 0 2.4rem 2.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+      justify-content: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      padding: .55rem 1rem;
+      border: 1.5px solid var(--line);
+      border-radius: 2px;
+      color: var(--ink);
+      transition: border-color .2s, color .2s;
+      cursor: default;
+    }
+
+    .pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ─── EXPERIENCIA ─── */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 2rem;
+      padding: 2.4rem 0;
+      /* border-bottom: 1px solid var(--line); */
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .5s, transform .5s;
+    }
+
+    .exp-item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .exp-year {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--ink-dim);
+      letter-spacing: .1em;
+      padding-top: .35rem;
+    }
+
+    .exp-year span {
+      display: block;
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--ink);
+      font-family: var(--serif);
+    }
+
+    .exp-role {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: .3rem;
+    }
+
+    .exp-company {
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .9rem;
+    }
+
+    .exp-desc {
+      color: var(--ink-dim);
+      font-size: .9rem;
+      margin-bottom: 1rem;
+    }
+
+    .exp-logros {
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .logro {
+      font-size: .88rem;
+      color: var(--ink);
+    }
+
+    .logro::before {
+      content: '→';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+
+    .logro strong {
+      font-weight: 500;
+    }
+
+    /* ─── COMPETENCIAS ─── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+    }
+
+    .comp-group-title {
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      margin-bottom: 1.5rem;
+    }
+
+    .comp-item {
+      margin-bottom: 1.1rem;
+      opacity: 0;
+      transform: translateX(-12px);
+      transition: opacity .4s, transform .4s;
+    }
+
+    .comp-item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .comp-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .85rem;
+      margin-bottom: .4rem;
+    }
+
+    .comp-label span:last-child {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--ink-dim);
+    }
+
+    .comp-bar {
+      height: 3px;
+      background: var(--line);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .comp-fill {
+      height: 100%;
+      background: var(--ink);
+      border-radius: 2px;
+      width: 0;
+      transition: width 1s cubic-bezier(.4, 0, .2, 1) .2s;
+    }
+
+    .comp-fill.accent {
+      background: var(--accent);
+    }
+
+    .soft-list {
+      display: flex;
+      flex-direction: column;
+      gap: .9rem;
+    }
+
+    .soft-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      font-size: .9rem;
+      padding: 1rem 1.2rem;
+      background: var(--card-bg);
+      border-radius: 4px;
+      border-left: 3px solid var(--accent);
+      opacity: 0;
+      transform: translateX(12px);
+      transition: opacity .4s, transform .4s;
+    }
+
+    .soft-item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .soft-label {
+      font-weight: 500;
+      display: block;
+      margin-bottom: .2rem;
+    }
+
+    .soft-desc {
+      font-size: .82rem;
+      color: var(--ink-dim);
+    }
+
+    /* ─── FORMACIÓN ─── */
+    .edu-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .edu-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--line);
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .5s, transform .5s;
+    }
+
+    .edu-item.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .edu-year {
+      font-family: var(--mono);
+      font-size: .72rem;
+      color: var(--ink-dim);
+      letter-spacing: .1em;
+      padding-top: .25rem;
+    }
+
+    .edu-title {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .25rem;
+    }
+
+    .edu-inst {
+      font-family: var(--mono);
+      font-size: .66rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .5rem;
+    }
+
+    .edu-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0;
+      padding: .25rem .6rem;
+      background: var(--ink);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: .08em;
+      border-radius: 2px;
+      margin-top: .4rem;
+      text-decoration: none;
+      cursor: pointer;
+      overflow: hidden;
+      transition: gap .25s ease, padding-left .25s ease, background .2s;
+    }
+
+    .edu-badge .badge-arrow {
+      display: inline-block;
+      width: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: width .25s ease, opacity .2s ease;
+      font-style: normal;
+      line-height: 1;
+    }
+
+    .edu-badge:hover {
+      background: var(--accent);
+      gap: .45rem;
+    }
+
+    .edu-badge:hover .badge-arrow {
+      width: 1em;
+      opacity: 1;
+    }
+
+    /* ─── IDIOMAS & HERRAMIENTAS ─── */
+    .lang-tools-grid {
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 4rem;
+    }
+
+    .lang-item {
+      margin-bottom: 1.4rem;
+    }
+
+    .lang-name {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .4rem;
+    }
+
+    .lang-level {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--ink-dim);
+      letter-spacing: .1em;
+      margin-bottom: .5rem;
+    }
+
+    .lang-dots {
+      display: flex;
+      gap: .4rem;
+    }
+
+    .lang-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: background .3s;
+    }
+
+    .lang-dot.active {
+      background: var(--ink);
+    }
+
+    .tools-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+
+    .tool-tag {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .06em;
+      padding: .45rem .9rem;
+      border: 1.5px solid var(--line);
+      border-radius: 2px;
+      color: var(--ink-dim);
+      transition: all .2s;
+      cursor: default;
+    }
+
+    .tool-tag:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+
+    .tool-tag.highlight {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 3rem 8vw;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-name {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      font-family: var(--mono);
+      font-size: .68rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ink-dim);
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+
+      /* SOBRESCRIBIR EL OVERFLOW OCULTO EN MOBILE */
+      html,
+      body {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        height: auto !important;
+      }
+
+      header,
+      section {
+        height: auto;
+        min-height: auto;
+        overflow: visible;
+      }
+
+      body {
+        padding-right: 0;
+        padding-bottom: 60px;
+        font-size: 13px;
+      }
+
+      nav {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        padding: 0 1rem;
+        border-left: none;
+        border-top: 1px solid var(--line);
+      }
+
+      .nav-links {
+        flex-direction: row;
+        gap: 0rem;
+      }
+
+      .nav-links a::after {
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: calc(100% + 8px);
+        transform: translateX(-50%) translateY(6px);
+      }
+
+      .nav-links a:hover::after {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .nav-links a.active::before {
+        left: 50%;
+        top: auto;
+        bottom: -4px;
+        transform: translateX(-50%);
+        width: 18px;
+        height: 3px;
+      }
+
+      .nav-bottom {
+        flex-direction: row;
+      }
+
+      /* ── HERO ── */
+      header {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        overflow-y: auto;
+        height: 100vh;
+      }
+
+      .hero-photo-col {
+        position: absolute;
+        top: 1.2rem;
+        right: 1.5rem;
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        overflow: hidden;
+      }
+
+      .hero-photo-col img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+      }
+
+      .hero-photo-col::after {
+        display: none;
+      }
+
+      .hero-left {
+        padding: 1.5rem 130px 1rem 6vw;
+      }
+
+      .hero-right {
+        padding: 1rem 6vw 5rem;
+      }
+
+      h1 {
+        font-size: clamp(1.8rem, 8vw, 2.6rem);
+      }
+
+      .hero-tag {
+        font-size: .58rem;
+        letter-spacing: .12em;
+      }
+
+      .hero-sub {
+        font-size: .8rem;
+        margin-top: .8rem;
+        line-height: 1.6;
+      }
+
+      .btn-primary,
+      .btn-ghost {
+        width: 170px;
+        height: 35px;
+      }
+
+      /* ── SECCIONES GENERALES EN MOBILE ──
+     El título se queda fijo arriba y el contenido hace scroll interno */
+      section {
+        padding: 0;
+        overflow-y: visible;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: auto;
+      }
+
+      .section-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: var(--bg);
+        padding: 1.2rem 6vw .9rem;
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--line);
+        gap: .8rem;
+      }
+
+      h2 {
+        font-size: clamp(1.3rem, 5vw, 1.7rem);
+      }
+
+      .section-num {
+        font-size: .6rem;
+      }
+
+      /* Contenido scrollable dentro de cada sección */
+      .valor-grid,
+      .exp-list,
+      .comp-grid,
+      .edu-list,
+      .lang-tools-grid {
+        padding: 1.4rem 6vw 4rem;
+        overflow-y: visible;
+        flex: 1;
+      }
+
+      /* ── VALOR ── */
+      .valor-grid,
+      .comp-grid,
+      .lang-tools-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .valor-text {
+        border-right: none;
+        /* border-bottom: 1px solid var(--line); */
+        padding: 0 0 1.4rem;
+        font-size: .8rem;
+        line-height: 1.5;
+      }
+
+      .valor-pills {
+        padding: 1.2rem 0 0;
+        gap: .4rem;
+      }
+
+      .pill {
+        font-size: .68rem;
+        padding: .45rem .8rem;
+      }
+
+      /* ── EXPERIENCIA ── */
+      .exp-item,
+      .edu-item {
+        grid-template-columns: 1fr;
+        gap: .4rem;
+        padding: 1.2rem 0;
+      }
+
+      .exp-year {
+        font-size: .68rem;
+      }
+
+      .exp-year span {
+        font-size: 1.2rem;
+        display: inline;
+        margin: 0 .5rem;
+      }
+
+      /* 
+      .exp-year span::after {
+
+      } */
+
+      .exp-role {
+        font-size: 1.1rem;
+      }
+
+      .exp-company {
+        font-size: .62rem;
+      }
+
+      .exp-desc {
+        font-size: .83rem;
+      }
+
+      .logro {
+        font-size: .82rem;
+      }
+
+      /* ── COMPETENCIAS ── */
+      .comp-label {
+        font-size: .78rem;
+      }
+
+      .soft-item {
+        font-size: .83rem;
+        padding: .8rem 1rem;
+      }
+
+      .soft-label {
+        font-size: .85rem;
+      }
+
+      .soft-desc {
+        font-size: .76rem;
+      }
+
+      /* ── FORMACIÓN ── */
+      .edu-title {
+        font-size: .98rem;
+      }
+
+      .edu-inst {
+        font-size: .62rem;
+      }
+
+      /* ── IDIOMAS ── */
+      .lang-name {
+        font-size: .98rem;
+      }
+
+      .lang-level {
+        font-size: .65rem;
+      }
+
+      .tool-tag {
+        font-size: .65rem;
+        padding: .35rem .7rem;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        padding: 2rem 6vw;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <nav>
+    <a href="#hero" class="nav-logo">
+      <span class="nav-logo-a">A</span>
+      <span class="nav-logo-line"></span>
+      <span class="nav-logo-s">S</span>
+    </a>
+
+    <ul class="nav-links">
+      <li>
+        <a href="#valor" data-label="Valor" data-section="valor">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="#experiencia" data-label="Experiencia" data-section="experiencia">
+          <svg viewBox="0 0 24 24">
+            <rect x="2" y="7" width="20" height="14" rx="2" />
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+            <line x1="12" y1="12" x2="12" y2="16" />
+            <line x1="10" y1="14" x2="14" y2="14" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="#competencias" data-label="Competencias" data-section="competencias">
+          <svg viewBox="0 0 24 24">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="#formacion" data-label="Formación" data-section="formacion">
+          <svg viewBox="0 0 24 24">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+        </a>
+      </li>
+      <li>
+        <a href="#idiomas" data-label="Idiomas" data-section="idiomas">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+          </svg>
+        </a>
+      </li>
+    </ul>
+
+    <div class="nav-bottom">
+      <a href="mailto:alberto.suarez.ing@gmail.com" title="Email">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+          <polyline points="22,6 12,13 2,6" />
+        </svg>
+      </a>
+      <a href="https://www.linkedin.com/in/betosuarz/" target="_blank" title="LinkedIn">
+        <svg viewBox="0 0 24 24">
+          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+          <rect x="2" y="9" width="4" height="12" />
+          <circle cx="4" cy="4" r="2" />
+        </svg>
+      </a>
+    </div>
+  </nav>
+
+  <header id="hero">
+    <div class="hero-photo-col">
+      <img src="./assets/img/betosuarez.png" alt="Alberto Suárez" <svg viewBox="0 0 24 24">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+      </svg>
+      <span>Tu fotografía aquí</span>
+    </div>
+
+    <div class="hero-left">
+      <p class="hero-tag">Ingeniero Civil · Profesional Asistente de Proyectos</p>
+      <h1>Alberto<br /><span>Suárez</span></h1>
+      <p class="hero-sub">
+        Profesional involucrado en la evolución de proyectos de ingeniería y apoyo en la gestión de equipos
+        técnicos, centrándose en la obtención
+        de resultados concretos desde la fase de redacción hasta la ejecución y cierre de los proyectos.</p>
+      <p class="hero-sub">Mantiene una actitud orientada al aprendizaje continuo, capaz de incorporar nuevos
+        conocimientos y herramientas
+        para aportar valor y eficacia en cada proyecto.
+      </p>
+      <div class="hero-cta">
+        <a href="mailto:contacto@example.com" class="btn btn-primary">✉ Contactar</a>
+        <a href="https://www.linkedin.com/in/betosuarz/" target="_blank" class="btn btn-ghost">LinkedIn →</a>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-card">
+        <p class="card-label">Snapshot profesional</p>
+        <div class="card-stat">
+          <div class="stat-num">+10<sup>años</sup></div>
+          <div class="stat-desc">vinculado al mundo de la tecnología y el desarrollo digital de la empresa</div>
+        </div>
+        <div class="card-stat">
+          <div class="stat-num">3–4<sup>años</sup></div>
+          <div class="stat-desc">de experiencia directa en ingeniería civil y ejecución de obra</div>
+        </div>
+        <div class="card-stat">
+          <div class="stat-num">BIM</div>
+          <div class="stat-desc">Revit, CypeCAD, AutoCAD y BIM</div>
+        </div>
+        <!-- <hr class="card-divider" />
+        <div class="card-contact">
+          <div>📧 <a href="mailto:alberto.suarez.ing@gmail.com">Contactar por correo</a></div>
+          <div>🔗 <a href="https://www.linkedin.com/in/betosuarz/" target="_blank">Contactar por linkedIn</a>
+          </div>
+          <div>📍 Santo Domingo de la Calzada, La Rioja</div>
+        </div> -->
+      </div>
+    </div>
+    <div class="hero-bg-text">AS</div>
+  </header>
+
+  <section id="valor">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>Propuesta de Valor</h2>
+    </div>
+    <div class="valor-grid">
+      <div class="valor-text">
+        Ingeniero Civil con sólida formación técnica y cierta experiencia en ejecución de obras de edificación y
+        autovías.</br>
+        Cuenta con una mentalidad analítica y proactiva orientada a la mejora continua y a la eficiencia en los procesos
+        constructivos.</br>
+        Conocedor de las metodologías <strong>BIM (Revit, CypeCAD)</strong> y del diseño digital
+        aplicado a la ingeniería, combino la comprensión técnica con la capacidad para coordinar tareas y anticipar
+        posibles incidencias en obra o proyecto.</br>
+        Destaca por la facilidad para <strong>aprender rápidamente, adaptarse a nuevos entornos</strong> y aportar
+        soluciones prácticas a los retos del día a día, contribuyendo a que los proyectos avancen con calidad y
+        coherencia.</div>
+      <div class="valor-pills">
+        <div class="pill"><span class="pill-dot"></span>Certificación Superior Revit</div>
+        <div class="pill"><span class="pill-dot"></span>Certificación CypeCAD</div>
+        <div class="pill"><span class="pill-dot"></span>Certificación BIM Civil</div>
+        <div class="pill"><span class="pill-dot"></span>Asistencia en Ingeniería Civil</div>
+        <div class="pill"><span class="pill-dot"></span>Diseño gráfico & Desarrollo Web</div>
+        <div class="pill"><span class="pill-dot"></span>Capacidad de aprendizaje continuo</div>
+        <div class="pill"><span class="pill-dot"></span>Orientación a resultados inmediatos</div>
+        <div class="pill"><span class="pill-dot"></span>Pensamiento analítico y crítico</div>
+        <div class="pill"><span class="pill-dot"></span>Resolución de problemas técnicos</div>
+        <div class="pill"><span class="pill-dot"></span>Motivación por la mejora continua</div>
+      </div>
+  </section>
+
+  <section id="experiencia" data-nav="experiencia">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Experiencia Profesional</h2>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="exp-year">Desde<span>2017</span>- Actual</div>
+        <div class="exp-body">
+          <div class="exp-role">Técnico de Diseño y Desarrollo</div>
+          <div class="exp-company">Catedral de Santo Domingo de la Calzada · La Rioja, España</div>
+          <div class="exp-desc">Desarrollo y gestión integral de la comunicación digital y documental de la Catedral de
+            Santo Domingo de la Calzada, combinando estrategias de transformación digital con la coordinación de
+            proyectos orientados a la conservación y difusión del patrimonio. </div>
+          <div class="exp-desc">Responsable de modernizar la presencia online de la institución, optimizar sus flujos de
+            gestión y documentación, y apoyar la redacción de proyectos técnicos y culturales destinados a la mejora y
+            puesta en valor del conjunto monumental. </div>
+          <div class="exp-logros">
+            <div class="logro"> Diseño, desarrollo y mantenimiento de la web institucional con optimización SEO, y
+              producción de materiales gráficos (folletos, carteles, libros y revistas culturales), <strong>modernizando
+                la imagen de la institución y mejorando la gestión de visitas, eventos y contenidos culturales mediante
+                flujos digitales con Adobe CC</strong>.</div>
+            <div class="logro"> Redacción, edición y coordinación de contenidos para publicaciones, programas culturales
+              y comunicaciones institucionales, <strong>asegurando la coherencia narrativa y maximizando el impacto de
+                las actividades en audiencias locales e internacionales</strong>.</div>
+            <div class="logro"> Integración de herramientas de IA generativa en campañas de marketing y desarrollo de
+              producto cultural, <strong>optimizando la eficiencia creativa y ampliando el alcance visual de los
+                contenidos producidos</strong>.</div>
+            <div class="logro"> Gestión de documentación y elaboración de proyectos orientados a la mejora del
+              patrimonio
+              monumental y turístico, <strong>contribuyendo a la captación de financiación externa y a la preservación
+                del patrimonio histórico local</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiencia-2" data-nav="experiencia">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Experiencia Profesional</h2>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="exp-year">Desde<span>2015</span>- 2017</div>
+        <div class="exp-body">
+          <div class="exp-role">Ingeniero de Obra</div>
+          <div class="exp-company">Consorcio Estaciones Transmilenio CT2013 · Bogotá, Colombia</div>
+          <div class="exp-desc">Ingeniería estructural y supervisión técnica en infraestructura de transporte público
+            urbano de gran escala.</div>
+          <div class="exp-logros">
+            <div class="logro"> Seguimiento técnico de proyectos de edificación y obra civil, <strong>verificando el
+                avance de los trabajos frente a planos, pliegos y cronogramas establecidos</strong>.</div>
+            <div class="logro"> Revisión de planos y documentación técnica de estructuras y firmes, <strong>detectando
+                incoherencias y proponiendo ajustes en coordinación con el equipo de diseño</strong>.</div>
+            <div class="logro"> Elaboración y actualización de planos y detalles constructivos en AutoCAD, <strong>
+                apoyando la definición de soluciones en proyectos de edificios y carreteras</strong>.</div>
+            <div class="logro">Coordinación diaria con equipos de obra multidisciplinares y subcontratas, asegurando el
+              cumplimiento de hitos, <strong>calidades y medidas de seguridad en entornos de alta exigencia</strong>.
+            </div>
+            <div class="logro"> Control de costes de materiales e insumos, <strong>seguimiento de mediciones y apoyo en
+                certificaciones de obra para contribuir a la optimización presupuestaria del consorcio</strong>.</div>
+            <div class="logro"> Organización y liderazgo de reuniones semanales con equipos multidisciplinares y
+              subcontratistas, <strong>alineando avances del proyecto, resolviendo incidencias operativas y fomentando
+                la colaboración para cumplir los hitos establecidos</strong>.</div>
+            <div class="logro"> Elaboración de informes de avance y apoyo al jefe de obra/Project Manager en la
+              planificación, <strong>detección de desviaciones y toma de decisiones durante la ejecución del
+                proyecto</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiencia-3" data-nav="experiencia">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Experiencia Profesional</h2>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="exp-year">Desde<span>2013</span>- 2015</div>
+        <div class="exp-body">
+          <div class="exp-role">Auxiliar Administrativo de Ingeniería</div>
+          <div class="exp-company">Geotechnique & Pavements S.A.S. · Bogotá, Colombia</div>
+          <div class="exp-desc">Apoyo técnico en proyectos de geotecnia y pavimentación, colaborando en tareas de
+            seguimiento de obra y gestión básica de documentación en ingeniería civil.</div>
+          <div class="exp-logros">
+            <div class="logro"> Revisión de planos de geotecnia y pavimentación, <strong>verificando mediciones,
+                detalles
+                constructivos y coherencia con las especificaciones técnicas del proyecto</strong>.</div>
+            <div class="logro"> Apoyo en la preparación de documentos técnicos (memorias, fichas, reportes de avance),
+              <strong>para proyectos de pavimentación y obras de mejora del terreno</strong>.
+            </div>
+            <div class="logro"> Inspección de obra en campo junto al equipo técnico, <strong>recopilando datos,
+                registros fotográficos y observaciones para informes de seguimiento constructivo</strong>.</div>
+            <div class="logro"> Colaboración en la organización de ensayos de materiales y control básico de calidad
+              (suelo, mezclas asfálticas, capas de firme), <strong>en coordinación con laboratorios y
+                supervisión</strong>.</div>
+            <div class="logro"> Soporte a la coordinación de equipos de obra, <strong>gestionando comunicaciones
+                básicas, agendas de visitas y distribución de documentación entre los distintos agentes del
+                proyecto</strong>.</div>
+            <div class="logro"> Apoyo en la elaboración de presupuestos y cuadros de cantidades, <strong>preparando
+                listados de partidas y estimaciones básicas de costes para los proyectos de ingeniería
+                civil</strong>.</div>
+            <div class="logro"> Verificación de especificaciones técnicas en planos de pavimentos,
+              <strong>contrastando detalles con memorias descriptivas y pliegos de condiciones</strong>.
+            </div>
+            <div class="logro"> Archivo y actualización de planos, informes y correspondencia técnica,
+              <strong>asegurando un flujo documental ordenado para el equipo de ingeniería</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="competencias">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Competencias profesionales</h2>
+    </div>
+    <div class="comp-grid">
+      <div>
+        <p class="comp-group-title">Herramientas digitales</p>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Autodesk AutoCAD 2D / Civil 3D</span><span>Avanzado</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="80"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Autodesk Revit (BIM)</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="70"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Graphisoft CypeCAD (BIM)</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill" data-w="65"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>ETABS / SAP2000</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill" data-w="60"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Adobe Creative Cloud</span><span>Avanzado</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="90"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Trimble SketchUp</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="80"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Microsoft Project</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="70"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Epanet</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill" data-w="60"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>MATLAB</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill" data-w="60"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Microsoft 365 & Office</span><span>Avanzado</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="90"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>IA para proyectos técnicos</span><span>Avanzado</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="80"></div>
+          </div>
+        </div>
+        <div class="comp-item reveal-bar">
+          <div class="comp-label"><span>Desarrollo web (HTML/CSS/JS)</span><span>Intermedio</span></div>
+          <div class="comp-bar">
+            <div class="comp-fill accent" data-w="75"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="comp-group-title">Soft skills con evidencia</p>
+        <div class="soft-list">
+          <div class="soft-item reveal-soft">
+            <div>
+              <span class="soft-label">Liderazgo de equipos técnicos</span>
+              <span class="soft-desc">Coordinación de equipos de obra multidisciplinares en proyectos de infraestructura
+                pública, manteniendo plazos y estándares técnicos.</span>
+            </div>
+          </div>
+          <div class="soft-item reveal-soft">
+            <div>
+              <span class="soft-label">Adaptación rápida a nuevos entornos</span>
+              <span class="soft-desc">Transición exitosa de la ingeniería civil hacia el desarrollo e implementación
+                de soluciones digitales en empresa y la gestión patrimonial, dominando nuevas herramientas en
+                ambos contextos.</span>
+            </div>
+          </div>
+          <div class="soft-item reveal-soft">
+            <div>
+              <span class="soft-label">Resolución de problemas bajo presión</span>
+              <span class="soft-desc">Gestión de incidencias técnicas y ajustes de planos en tiempo real durante la
+                ejecución de proyectos de gran envergadura con impacto en presupuesto y plazo.</span>
+            </div>
+          </div>
+          <div class="soft-item reveal-soft">
+            <div>
+              <span class="soft-label">Mejora continua y pensamiento analítico</span>
+              <span class="soft-desc">Formación activa en nuevas tecnologías para complementar el perfil
+                técnico de ingeniería y desarrollo de soluciones de todo tipo de proyectos.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="formacion">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Formación & Certificaciones</h2>
+    </div>
+    <div class="edu-list">
+
+      <div class="edu-item reveal">
+        <div class="edu-year">2022</div>
+        <div>
+          <div class="edu-title">Curso Superior de Diseño Arquitectónico con Revit</div>
+          <div class="edu-inst">CEAC · Deusto Formación · VIU · Autodesk Inc. · 200 horas</div>
+          <p style="font-size:.87rem;color:var(--ink-dim)">Triple certificación: Deusto Formación,
+            Universidad Internacional de Valencia y Certificado Oficial Autodesk.</p>
+          <a class="edu-badge" href="./assets/doc/diploma-revit.pdf" target="_blank">
+            <span class="badge-arrow">↓</span>Revit Avanzado</a>
+        </div>
+      </div>
+
+      <div class="edu-item reveal">
+        <div class="edu-year">2021</div>
+        <div>
+          <div class="edu-title">Cálculo de estructuras de Hormigón con CypeCAD</div>
+          <div class="edu-inst">Grupo HEDIMA · Madrid · 80 horas</div>
+          <p style="font-size:.87rem;color:var(--ink-dim)">Curso de diseño y cálculo de estructuras con software
+            especializado, incluyendo modelado de elementos estructurales, análisis de cargas, cimentación, armaduras y
+            generación de proyectos en entorno 3D.</p>
+          <a class="edu-badge" href="./assets/doc/diploma-cypecad.pdf" target="_blank">
+            <span class="badge-arrow">↓</span>Estructuras con CypeCAD</a>
+        </div>
+      </div>
+
+      <div class="edu-item reveal">
+        <div class="edu-year">2021</div>
+        <div>
+          <div class="edu-title">BIM Civil</div>
+          <div class="edu-inst">Grupo HEDIMA · Madrid · 210 horas</div>
+          <p style="font-size:.87rem;color:var(--ink-dim)">Curso de metodología BIM aplicado a la gestión integral de
+            proyectos, incluyendo modelado con herramientas como Allplan o Revit, planificación (4D), control de costes
+            (5D), análisis energético (6D) y facility management (7D), con desarrollo práctico final.</p>
+          <a class="edu-badge" href="./assets/doc/diploma-bimcivil.pdf" target="_blank">
+            <span class="badge-arrow">↓</span>BIM Civil</a>
+        </div>
+      </div>
+
+      <div class="edu-item reveal">
+        <div class="edu-year">2015</div>
+        <div>
+          <div class="edu-title">Ingeniería Civil</div>
+          <div class="edu-inst">Formación universitaria — Colombia</div>
+          <p style="font-size:.87rem;color:var(--ink-dim)">Base técnica en cálculo estructural,
+            topografía, hidráulica, geotecnia, pavimentos y gestión de proyectos de obra civil.</p>
+          <a class="edu-badge" href="./assets/doc/tituloIng-credencial.pdf" target="_blank">
+            <span class="badge-arrow">↓</span>Título de Ingeniería Civil
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="idiomas">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Idiomas & Habilidades</h2>
+    </div>
+    <div class="lang-tools-grid">
+      <div>
+        <p class="comp-group-title" style="margin-bottom:2rem">Herramientas & Software</p>
+        <div class="tools-grid">
+          <span class="tool-tag highlight">Planificación y organización</span>
+          <span class="tool-tag">Coordinación de equipos</span>
+          <span class="tool-tag highlight">Apoyo en dirección de obra</span>
+          <span class="tool-tag">Control básico de costes</span>
+          <span class="tool-tag highlight">Gestión básica de proyectos</span>
+          <span class="tool-tag">Gestión efectiva del tiempo</span>
+          <span class="tool-tag highlight">Uso de IA en entornos técnicos</span>
+          <span class="tool-tag">Comunicación efectiva</span>
+          <span class="tool-tag highlight">Resolución de incidencias</span>
+          <span class="tool-tag highlight">Interpretación de planos</span>
+          <span class="tool-tag">Trabajo en equipo</span>
+          <span class="tool-tag highlight">Capacidad de aprendizaje</span>
+          <span class="tool-tag">Pensamiento analítico</span>
+          <span class="tool-tag highlight">Responsabilidad e iniciativa</span>
+          <span class="tool-tag">Adaptabilidad y proactividad</span>
+          <span class="tool-tag highlight">Orientación a resultados</span>
+          <span class="tool-tag">Apoyo en control de calidad</span>
+          <span class="tool-tag highlight">Uso de herramientas digitales</span>
+          <span class="tool-tag highlight">Organización documental</span>
+          <span class="tool-tag">Capacidad de síntesis</span>
+          <span class="tool-tag highlight">Compromiso profesional</span>
+        </div>
+      </div>
+      <div>
+        <p class="comp-group-title" style="margin-bottom:2rem">Idiomas</p>
+        <div class="lang-item">
+          <div class="lang-name">Español</div>
+          <div class="lang-level">Nativo</div>
+          <div class="lang-dots">
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+          </div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-name">Inglés</div>
+          <div class="lang-level">Intermedio · B1/B2</div>
+          <div class="lang-dots">
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot"></div>
+            <div class="lang-dot"></div>
+          </div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-name">Euskera</div>
+          <div class="lang-level">Intermedio · B1</div>
+          <div class="lang-dots">
+            <div class="lang-dot active"></div>
+            <div class="lang-dot active"></div>
+            <div class="lang-dot"></div>
+            <div class="lang-dot"></div>
+            <div class="lang-dot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="footcer">
+    <div class="footer-name">Alberto Suárez</div>
+    <div class="footer-links">
+      <a href="mailto:alberto.suarez.ing@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/betosuarz/" target="_blank">LinkedIn</a>
+      <a href="tel:+34622520789">+34 622 520 789</a>
+    </div>
+    <div style="font-family:var(--mono);font-size:.65rem;color:var(--ink-dim)">
+      © 2026 · Santo Domingo de la Calzada, La Rioja
+    </div>
+  </footer>
+
+  <script>
+    // ─── CURSOR ───
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX - 5 + 'px';
+      cursor.style.top = e.clientY - 5 + 'px';
+    });
+    document.querySelectorAll('a, button, .pill, .tool-tag, .soft-item').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    });
+
+    // ─── REVEAL ANIMATIONS ───
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const delay = (el.dataset.delay || 0) * 1000;
+          setTimeout(() => {
+            el.classList.add('visible');
+            el.querySelectorAll('.comp-fill').forEach(bar => {
+              bar.style.width = bar.dataset.w + '%';
+            });
+          }, delay);
+          io.unobserve(el);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.exp-item, .edu-item').forEach((el, i) => {
+      el.dataset.delay = (i % 3) * 0.1;
+      io.observe(el);
+    });
+
+    const barIo = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          entry.target.querySelectorAll('.comp-fill').forEach(bar => {
+            setTimeout(() => { bar.style.width = bar.dataset.w + '%'; }, 100);
+          });
+          barIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.reveal-bar').forEach((el, i) => {
+      el.style.transitionDelay = (i * 0.07) + 's';
+      barIo.observe(el);
+    });
+
+    const softIo = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          softIo.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal-soft').forEach(el => softIo.observe(el));
+
+    // ─── SCROLL SECCIÓN A SECCIÓN (solo desktop) ───
+    const navSections = Array.from(document.querySelectorAll('section[id], header[id], footer[id]'));
+    const navLinks = document.querySelectorAll('.nav-links a[data-section]');
+    let currentIdx = 0;
+    let isScrolling = false;
+
+    function isMobile() {
+      return window.innerWidth <= 768;
+    }
+
+    function goToSection(idx) {
+      if (idx < 0 || idx >= navSections.length) return;
+      currentIdx = idx;
+      navSections[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      updateActiveNav();
+      isScrolling = true;
+      setTimeout(() => { isScrolling = false; }, 700);
+    }
+
+    function updateActiveNav() {
+      // Si estamos en mobile y no venimos de un clic manual, el active lo maneja el Observer de abajo
+      const section = navSections[currentIdx];
+      const activeKey = section?.dataset.nav || section?.id;
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.dataset.section === activeKey);
+      });
+    }
+
+    // ACTUALIZAR NAV ACTIVO EN MOBILE (Scroll Fluido)
+    // En mobile no hay eventos de rueda, así que detectamos qué sección está en pantalla
+    const mobileNavObserver = new IntersectionObserver((entries) => {
+      if (!isMobile()) return;
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const activeKey = entry.target.dataset.nav || entry.target.id;
+          navLinks.forEach(a => {
+            a.classList.toggle('active', a.dataset.section === activeKey);
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+    navSections.forEach(s => mobileNavObserver.observe(s));
+
+    // Rueda del ratón — solo se registra en desktop para no bloquear scroll nativo en mobile
+    if (!isMobile()) {
+      window.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (isScrolling) return;
+        if (e.deltaY > 0) {
+          goToSection(currentIdx + 1);
+        } else {
+          goToSection(currentIdx - 1);
+        }
+      }, { passive: false });
+    }
+
+    // Soporte táctil — solo desktop
+    let touchStartY = 0;
+    if (!isMobile()) {
+      window.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      window.addEventListener('touchend', (e) => {
+        if (isScrolling) return;
+        const delta = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(delta) < 30) return;
+        goToSection(delta > 0 ? currentIdx + 1 : currentIdx - 1);
+      }, { passive: true });
+    }
+
+    // Teclado — solo desktop
+    if (!isMobile()) {
+      window.addEventListener('keydown', (e) => {
+        if (isScrolling) return;
+        if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+          e.preventDefault();
+          goToSection(currentIdx + 1);
+        } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+          e.preventDefault();
+          goToSection(currentIdx - 1);
+        }
+      });
+    }
+
+    // Nav links: ir a la primera subsección del grupo
+    navLinks.forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.dataset.section;
+        const idx = navSections.findIndex(s => s.id === id || s.dataset.nav === id);
+        if (idx !== -1) goToSection(idx);
+      });
+    });
+
+    // Logo → sección 0
+    document.querySelector('.nav-logo').addEventListener('click', (e) => {
+      e.preventDefault();
+      goToSection(0);
+    });
+
+    // Botones hero CTA que enlazan a secciones
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      if (a.classList.contains('nav-logo') || a.dataset.section) return;
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1);
+        const idx = navSections.findIndex(s => s.id === id || s.dataset.nav === id);
+        if (idx !== -1) goToSection(idx);
+      });
+    });
+  </script>
+
+</body>
+
+</html>
